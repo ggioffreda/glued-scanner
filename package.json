@@ -1,0 +1,38 @@
+{
+  "name": "glued-scanner",
+  "version": "0.2.0",
+  "description": "Scans objects sent to a Glue store and keeps track of their properties",
+  "main": "scanner.js",
+  "dependencies": {
+    "glued-common": "^0.4.2"
+  },
+  "devDependencies": {
+    "eslint-config-standard": "^6.2.0",
+    "eslint-plugin-promise": "^2.0.1",
+    "eslint-plugin-standard": "^2.0.1",
+    "standard": "^8.3.0"
+  },
+  "scripts": {
+    "test": "node_modules/.bin/standard"
+  },
+  "bin": {
+    "glued-scanner": "bin/service.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ggioffreda/glued-scanner.git"
+  },
+  "keywords": [
+    "glue",
+    "glued",
+    "scanner",
+    "scan",
+    "properties"
+  ],
+  "author": "Giovanni Gioffreda <giovanni.gioffreda@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ggioffreda/glued-scanner/issues"
+  },
+  "homepage": "https://github.com/ggioffreda/glued-scanner#readme"
+}
