@@ -63,13 +63,13 @@ function Scanner () {
         break
       case 'string':
       case 'array':
-        details.size = typeof details.size === 'undefined' || details.size < value.length ?
-          value.length : details.size
+        details.size = typeof details.size === 'undefined' || details.size < value.length
+          ? value.length : details.size
         break
       case 'object':
         if (value !== null) {
-          details.size = typeof details.size === 'undefined' || details.size < Object.keys(value).length ?
-            Object.keys(value).length : details.size
+          details.size = typeof details.size === 'undefined' || details.size < Object.keys(value).length
+            ? Object.keys(value).length : details.size
         }
         break
     }
@@ -77,7 +77,7 @@ function Scanner () {
       value.forEach(function (item) {
         details.subtype = describeProperty(item, details.subtype, action)
       })
-    } else if ('object' === detected) {
+    } else if (detected === 'object') {
       details.properties = describe(value, details.properties, action)
     }
     propertyDescriptor.detected[detected] = details
@@ -140,10 +140,10 @@ function Scanner () {
                   return
                 }
 
-                const descriptor = descriptorResponse.data ?
-                  descriptorResponse.data : { id: typeId, type: 'object', properties: {} }
+                const descriptor = descriptorResponse.data
+                  ? descriptorResponse.data : { id: typeId, type: 'object', properties: {} }
                 descriptor.properties = describe(documentResponse.data, descriptor.properties, action)
-                messageBusChannel.publish(['scanner', metaDomain, metaType, typeId, 'put', 'store' ].join('.'), descriptor)
+                messageBusChannel.publish(['scanner', metaDomain, metaType, typeId, 'put', 'store'].join('.'), descriptor)
                 cb()
               }
             )
