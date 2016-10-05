@@ -28,12 +28,18 @@ function Scanner () {
     return 'object'
   }
 
-  function defaultDescriptor () {
-    return { type: null, seen: 0, nullable: false, not_defined: false, detected: {} }
+  function defaultDescriptor (initial) {
+    initial = initial || {}
+    if (!initial.type) initial.type = null
+    if (!initial.seen) initial.seen = 0
+    if (!initial.nullable) initial.nullable = false
+    if (!initial.not_defined) initial.not_defined = false
+    if (!initial.detected) initial.detected = {}
+    return initial
   }
 
   function describeProperty (value, propertyDescriptor, action) {
-    propertyDescriptor = propertyDescriptor || defaultDescriptor()
+    propertyDescriptor = defaultDescriptor(propertyDescriptor)
 
     const detected = detectType(value)
 
@@ -47,7 +53,7 @@ function Scanner () {
     }
 
     const detectedTypes = propertyDescriptor.detected
-    if (!detectedTypes[detected]) {
+    if (!detectedTypes.hasOwnProperty(detected)) {
       detectedTypes[detected] = { seen: 0 }
     }
     detectedTypes[detected].seen++
@@ -105,7 +111,7 @@ function Scanner () {
   }
 
   function describe (object, descriptor, action) {
-    return describeProperty(object, descriptor || {}, action)
+    return describeProperty(object, descriptor, action)
     // descriptor = descriptor || {}
     //
     // if (object !== null) {
