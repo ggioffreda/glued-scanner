@@ -18,6 +18,8 @@ function Scanner () {
   }
 
   function detectType (value) {
+    if (value === null) return 'null'
+    if (typeof value === 'undefined') return 'undefined'
     if (value === true || value === false) return 'boolean'
     if (parseInt(value) === value) return 'integer'
     if (typeof value === 'number') return 'float'
@@ -27,15 +29,24 @@ function Scanner () {
   }
 
   function defaultDescriptor () {
-    return { type: null, seen: 0, detected: {} }
+    return { type: null, seen: 0, nullable: false, not_defined: false, detected: {} }
   }
 
   function describeProperty (value, propertyDescriptor, action) {
     propertyDescriptor = propertyDescriptor || defaultDescriptor()
 
     const detected = detectType(value)
-    const detectedTypes = propertyDescriptor.detected
 
+    // if null or undefined is detected end the detection here
+    if (detected === 'null') {
+      propertyDescriptor.nullable = true
+      return propertyDescriptor
+    } else if (detected === 'undefined') {
+      propertyDescriptor.not_defined = true
+      return propertyDescriptor
+    }
+
+    const detectedTypes = propertyDescriptor.detected
     if (!detectedTypes[detected]) {
       detectedTypes[detected] = { seen: 0 }
     }
@@ -78,22 +89,32 @@ function Scanner () {
         details.subtype = describeProperty(item, details.subtype, action)
       })
     } else if (detected === 'object') {
-      details.properties = describe(value, details.properties, action)
+      details.properties = describeProperty(value, details.properties, action)
     }
     propertyDescriptor.detected[detected] = details
+
+    // reverse detect undefined properties in the object
+    if (detected === 'object') {
+      Object.keys(details.properties.detected).forEach(function (knownProperty) {
+        if (!value.hasOwnProperty(knownProperty)) {
+          details.properties.detected[knownProperty].not_defined = true
+        }
+      })
+    }
     return propertyDescriptor
   }
 
   function describe (object, descriptor, action) {
-    descriptor = descriptor || {}
-
-    if (object !== null) {
-      Object.keys(object).forEach(function (property) {
-        descriptor[property] = describeProperty(object[property], descriptor[property], action)
-      })
-    }
-
-    return descriptor
+    return describeProperty(object, descriptor || {}, action)
+    // descriptor = descriptor || {}
+    //
+    // if (object !== null) {
+    //   Object.keys(object).forEach(function (property) {
+    //     descriptor[property] = describeProperty(object[property], descriptor[property], action)
+    //   })
+    // }
+    //
+    // return descriptor
   }
 
   this.setUp = function (dependencies) {
@@ -117,7 +138,7 @@ function Scanner () {
         cb()
         return
       }
-
+      console.log({ method: 'get', domain: domain, type: type, id: id })
       messageBusChannel.getRpc().request(
         'store_rpc',
         { method: 'get', domain: domain, type: type, id: id },
