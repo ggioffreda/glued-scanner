@@ -1,6 +1,6 @@
 {
   "name": "glued-scanner",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Scans objects sent to a Glue store and keeps track of their properties",
   "main": "scanner.js",
   "dependencies": {
