@@ -135,7 +135,6 @@ function Scanner () {
         cb()
         return
       }
-      console.log({ method: 'get', domain: domain, type: type, id: id })
       messageBusChannel.getRpc().request(
         'store_rpc',
         { method: 'get', domain: domain, type: type, id: id },
