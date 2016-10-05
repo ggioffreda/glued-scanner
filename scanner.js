@@ -84,10 +84,8 @@ function Scanner () {
           ? value.length : details.size
         break
       case 'object':
-        if (value !== null) {
-          details.size = typeof details.size === 'undefined' || details.size < Object.keys(value).length
-            ? Object.keys(value).length : details.size
-        }
+        details.size = typeof details.size === 'undefined' || details.size < Object.keys(value).length
+          ? Object.keys(value).length : details.size
         break
     }
     if (detected === 'array') {
@@ -95,7 +93,10 @@ function Scanner () {
         details.subtype = describeProperty(item, details.subtype, action)
       })
     } else if (detected === 'object') {
-      details.properties = describeProperty(value, details.properties, action)
+      details.properties = details.properties || {}
+      Object.keys(value).forEach(function (property) {
+        details.properties[property] = describeProperty(value[property], {}, action)
+      })
     }
     propertyDescriptor.detected[detected] = details
 
@@ -158,8 +159,8 @@ function Scanner () {
                 }
 
                 const descriptor = descriptorResponse.data
-                  ? descriptorResponse.data : { id: typeId, type: 'object', properties: {} }
-                descriptor.properties = describe(documentResponse.data, descriptor.properties, action)
+                  ? descriptorResponse.data : { id: typeId, descriptor: {} }
+                descriptor.descriptor = describe(documentResponse.data, descriptor.descriptor, action)
                 messageBusChannel.publish(['scanner', metaDomain, metaType, typeId, 'put', 'store'].join('.'), descriptor)
                 cb()
               }
