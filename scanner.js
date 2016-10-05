@@ -112,15 +112,6 @@ function Scanner () {
 
   function describe (object, descriptor, action) {
     return describeProperty(object, descriptor, action)
-    // descriptor = descriptor || {}
-    //
-    // if (object !== null) {
-    //   Object.keys(object).forEach(function (property) {
-    //     descriptor[property] = describeProperty(object[property], descriptor[property], action)
-    //   })
-    // }
-    //
-    // return descriptor
   }
 
   this.setUp = function (dependencies) {
