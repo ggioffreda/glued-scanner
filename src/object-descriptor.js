@@ -4,7 +4,7 @@ function ObjectDescriptor () {
 
 ObjectDescriptor.detectType = function (value) {
   if (value === null) return 'null'
-  if (typeof value === 'undefined') return 'undefined'
+  if (typeof value === 'undefined' || Number.isNaN(value)) return 'undefined'
   if (value === true || value === false) return 'boolean'
   if (parseInt(value) === value) return 'integer'
   if (typeof value === 'number') return 'float'
