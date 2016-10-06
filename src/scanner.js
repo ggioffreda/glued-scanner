@@ -176,4 +176,4 @@ function Scanner () {
   }
 }
 
-module.exports.Scanner = Scanner
+module.exports = Scanner
