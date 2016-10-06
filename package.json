@@ -10,10 +10,13 @@
     "eslint-config-standard": "^6.2.0",
     "eslint-plugin-promise": "^2.0.1",
     "eslint-plugin-standard": "^2.0.1",
-    "standard": "^8.3.0"
+    "mocha": "^3.0.1",
+    "sinon": "^1.17.5",
+    "standard": "^8.3.0",
+    "supertest": "^2.0.0"
   },
   "scripts": {
-    "test": "node_modules/.bin/standard"
+    "test": "node node_modules/.bin/mocha --recursive test/ && node_modules/.bin/standard"
   },
   "bin": {
     "glued-scanner": "bin/service.js"
