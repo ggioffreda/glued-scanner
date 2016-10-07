@@ -61,4 +61,36 @@ describe('ObjectDescriptor', function () {
       assert.equal(ObjectDescriptor.detectType(new ObjectDescriptor()), 'object')
     })
   })
+
+  describe('ObjectDescriptor.defaultDescriptor', function () {
+    const defaultDescriptor = function () {
+      return {
+        type: null,
+        seen: 0,
+        nullable: false,
+        not_defined: false,
+        detected: {}
+      }
+    }
+
+    it('should return a default one when none is provided', function () {
+      assert.deepEqual(ObjectDescriptor.defaultDescriptor(), defaultDescriptor())
+      assert.deepEqual(ObjectDescriptor.defaultDescriptor({}), defaultDescriptor())
+    })
+
+    it('should not override the type of the given descriptor', function () {
+      var descriptorWithType = ObjectDescriptor.defaultDescriptor({ type: 'something' })
+      assert.deepEqual(descriptorWithType.type, 'something')
+    })
+
+    it('should not override the number of times seen of the given descriptor', function () {
+      var descriptorWithType = ObjectDescriptor.defaultDescriptor({ seen: 100 })
+      assert.deepEqual(descriptorWithType.seen, 100)
+    })
+
+    it('should not override the nullable flag of the given descriptor', function () {
+      var descriptorWithType = ObjectDescriptor.defaultDescriptor({ nullable: true })
+      assert.deepEqual(descriptorWithType.nullable, true)
+    })
+  })
 })
