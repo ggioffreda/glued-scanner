@@ -64,6 +64,10 @@ describe('ObjectDescriptor', function () {
       assert.equal(ObjectDescriptor.detectType(''), 'string')
     })
 
+    it('should detect function values', function () {
+      assert.equal(ObjectDescriptor.detectType(ObjectDescriptor.detectType), 'function')
+    })
+
     it('should detect object values', function () {
       assert.equal(ObjectDescriptor.detectType({}), 'object')
       assert.equal(ObjectDescriptor.detectType({ prop: 'some' }), 'object')

@@ -10,6 +10,7 @@ ObjectDescriptor.detectType = function (value) {
   if (typeof value === 'number') return 'float'
   if (Object.prototype.toString.call(value) === '[object Array]') return 'array'
   if (Object.prototype.toString.call(value) === '[object String]') return 'string'
+  if (Object.prototype.toString.call(value) === '[object Function]') return 'function'
   return 'object'
 }
 
