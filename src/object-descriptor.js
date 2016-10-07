@@ -13,47 +13,47 @@ ObjectDescriptor.detectType = function (value) {
   return 'object'
 }
 
-ObjectDescriptor.defaultDescriptor = function (descriptor) {
+ObjectDescriptor.decorateDescriptor = function (descriptor) {
   descriptor = descriptor || {}
   if (!descriptor.type) descriptor.type = null
-  if (!descriptor.seen) descriptor.seen = 0
+  if (!descriptor.times_seen) descriptor.times_seen = 0
   if (!descriptor.nullable) descriptor.nullable = false
   if (!descriptor.not_defined) descriptor.not_defined = false
   if (!descriptor.detected) descriptor.detected = {}
   return descriptor
 }
 
-ObjectDescriptor.describe = function (value, propertyDescriptor, seen) {
-  propertyDescriptor = ObjectDescriptor.defaultDescriptor(propertyDescriptor)
+ObjectDescriptor.describe = function (value, propertyDescriptor) {
+  propertyDescriptor = ObjectDescriptor.decorateDescriptor(propertyDescriptor)
 
   const detected = ObjectDescriptor.detectType(value)
 
   // if null or undefined is detected end the detection here
   if (detected === 'null') {
     propertyDescriptor.nullable = true
-    return propertyDescriptor
   } else if (detected === 'undefined') {
     propertyDescriptor.not_defined = true
-    return propertyDescriptor
   }
 
   const detectedTypes = propertyDescriptor.detected
   if (!detectedTypes.hasOwnProperty(detected)) {
-    detectedTypes[detected] = { seen: 0 }
+    detectedTypes[detected] = { times_seen: 0 }
   }
-  detectedTypes[detected].seen++
+  detectedTypes[detected].times_seen++
+  propertyDescriptor.times_seen++
 
   // pick the most seen
   var picked = detected
   Object.keys(detectedTypes).forEach(function (detectedType) {
-    if (detectedTypes[detectedType].seen > detectedTypes[picked].seen) {
+    if (['null', 'undefined'].indexOf(detectedType) >= 0) {
+      return
+    }
+
+    if (detectedTypes[detectedType].times_seen > detectedTypes[picked].times_seen) {
       picked = detectedType
     }
   })
-  propertyDescriptor.type = picked
-  if (seen) {
-    propertyDescriptor.seen++
-  }
+  propertyDescriptor.type = ['null', 'undefined'].indexOf(picked) >= 0 ? null : picked
 
   // update details
   var details = propertyDescriptor.detected[detected]
@@ -75,24 +75,22 @@ ObjectDescriptor.describe = function (value, propertyDescriptor, seen) {
   }
   if (detected === 'array') {
     value.forEach(function (item) {
-      details.subtype = ObjectDescriptor.describeProperty(item, details.subtype, seen)
+      details.subtype = ObjectDescriptor.describe(item, details.subtype)
     })
   } else if (detected === 'object') {
     details.properties = details.properties || {}
     Object.keys(value).forEach(function (property) {
-      details.properties[property] = ObjectDescriptor.describeProperty(value[property], {}, seen)
+      details.properties[property] = ObjectDescriptor.describe(value[property], details.properties[property])
+    })
+    // reverse detect undefined properties in the object
+    Object.keys(details.properties).forEach(function (knownProperty) {
+      if (!value.hasOwnProperty(knownProperty)) {
+        details.properties[knownProperty].not_defined = true
+      }
     })
   }
   propertyDescriptor.detected[detected] = details
 
-  // reverse detect undefined properties in the object
-  if (detected === 'object') {
-    Object.keys(details.properties.detected).forEach(function (knownProperty) {
-      if (!value.hasOwnProperty(knownProperty)) {
-        details.properties.detected[knownProperty].not_defined = true
-      }
-    })
-  }
   return propertyDescriptor
 }
 
