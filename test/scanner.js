@@ -58,9 +58,9 @@ describe('Scanner', function () {
       const ObjectDescriiptor = require('../src/object-descriptor')
       const expectedDescriptor = { descriptor: ObjectDescriiptor.describe(object), id: 'type:test:test' }
       consumer(['test', 'test', 'test', '1', 'inserted'].join('.'), {}, {}, done)
-      assert.ok(rpcRequest.calledTwice)
-      assert.ok(messageBusChannel.publish.calledOnce)
-      assert.deepEqual(messageBusChannel.publish.lastCall.args[1], expectedDescriptor)
+      assert.ok(rpcRequest.calledThrice)
+      assert.equal(rpcRequest.lastCall.args[1].id, 'type:test:test')
+      assert.deepEqual(rpcRequest.lastCall.args[2], expectedDescriptor)
     })
   })
 })
