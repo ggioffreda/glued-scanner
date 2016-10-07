@@ -23,6 +23,12 @@ function Scanner () {
 
     function consumer (routingKey, content, rawContent, cb) {
       const routingParts = routingKey.split('.')
+      if (routingParts.length < 5) {
+        // skip scanning if the routing key (topic) is not valid
+        cb()
+        return
+      }
+
       const domain = routingParts[1]
       const type = routingParts[2]
       const id = routingParts[3]
