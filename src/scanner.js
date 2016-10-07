@@ -18,10 +18,6 @@ function Scanner () {
     return dependency === 'message-bus'
   }
 
-  function describe (object, descriptor, action) {
-    return ObjectDescriptor.describe(object, descriptor, action)
-  }
-
   this.setUp = function (dependencies) {
     const messageBusChannel = dependencies['message-bus']
 
@@ -67,7 +63,7 @@ function Scanner () {
 
                 const descriptor = descriptorResponse.data
                   ? descriptorResponse.data : { id: typeId, descriptor: {} }
-                descriptor.descriptor = describe(documentResponse.data, descriptor.descriptor, action)
+                descriptor.descriptor = ObjectDescriptor.describe(documentResponse.data, descriptor.descriptor)
                 messageBusChannel.publish(['scanner', metaDomain, metaType, typeId, 'put', 'store'].join('.'), descriptor)
                 cb()
               }
