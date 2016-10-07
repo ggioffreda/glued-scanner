@@ -82,15 +82,13 @@ function Scanner () {
               const descriptor = descriptorResponse.data ? descriptorResponse.data : { id: typeId, descriptor: {} }
               descriptor.descriptor = ObjectDescriptor.describe(document, descriptor.descriptor)
               callback(null, typeId, descriptor)
-              cb()
             }
           )
         },
         function (typeId, descriptor, callback) {
           messageBusChannel.getRpc().request(
             'store_rpc',
-            { method: 'put', domain: metaDomain, type: metaType, id: typeId },
-            descriptor,
+            { method: 'put', domain: metaDomain, type: metaType, id: typeId, object: descriptor },
             function (err) {
               callback(err)
             }
