@@ -252,5 +252,26 @@ describe('ObjectDescriptor', function () {
         assert.descriptorsMatch(currentDescriptor, fullDescriptor(i), 'Iteration ' + i)
       }
     })
+
+    it('should select as default type the most seen', function () {
+      var values = [{
+        expected: 'string',
+        values: ['a', 'b', 'c', 1, 2]
+      }, {
+        expected: 'integer',
+        values: [3, 4, 5, 0.1, 0.2, 0.3, 0.4]
+      }, {
+        expected: 'float',
+        values: [0.5, 0.6]
+      }]
+      var descriptor = {}
+      values.forEach(function (batch) {
+        const expected = batch.expected
+        batch.values.forEach(function (value) {
+          descriptor = ObjectDescriptor.describe(value, descriptor)
+          assert.equal(descriptor.type, expected)
+        })
+      })
+    })
   })
 })
