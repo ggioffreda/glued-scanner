@@ -45,40 +45,58 @@ function Scanner () {
         cb()
         return
       }
-      messageBusChannel.getRpc().request(
-        'store_rpc',
-        { method: 'get', domain: domain, type: type, id: id },
-        function (err, documentResponse) {
-          if (err) {
-            // log the error
-            cb()
-            return
-          }
 
-          if (documentResponse.data) {
-            const typeId = ['type', domain, type].join(':')
-            messageBusChannel.getRpc().request(
-              'store_rpc',
-              { method: 'get', domain: metaDomain, type: metaType, id: typeId },
-              function (err, descriptorResponse) {
-                if (err) {
-                  // log the error
-                  cb()
-                  return
-                }
+      const async = require('async')
 
-                const descriptor = descriptorResponse.data
-                  ? descriptorResponse.data : { id: typeId, descriptor: {} }
-                descriptor.descriptor = ObjectDescriptor.describe(documentResponse.data, descriptor.descriptor)
-                messageBusChannel.publish(['scanner', metaDomain, metaType, typeId, 'put', 'store'].join('.'), descriptor)
-                cb()
+      async.waterfall([
+        function (callback) {
+          messageBusChannel.getRpc().request(
+            'store_rpc',
+            { method: 'get', domain: domain, type: type, id: id },
+            function (err, documentResponse) {
+              if (err) {
+                // log the error
+                callback(new Error('Error fetching the document'))
+                return
               }
-            )
-          } else {
-            cb()
-          }
+
+              if (documentResponse.data) {
+                const typeId = ['type', domain, type].join(':')
+                callback(null, typeId, documentResponse.data)
+              } else {
+                callback(new Error('No document returned'))
+              }
+            }
+          )
+        },
+        function (typeId, document, callback) {
+          messageBusChannel.getRpc().request(
+            'store_rpc',
+            { method: 'get', domain: metaDomain, type: metaType, id: typeId },
+            function (err, descriptorResponse) {
+              if (err) {
+                callback(new Error('Error fetching the descriptor'))
+                return
+              }
+
+              const descriptor = descriptorResponse.data ? descriptorResponse.data : { id: typeId, descriptor: {} }
+              descriptor.descriptor = ObjectDescriptor.describe(document, descriptor.descriptor)
+              callback(null, typeId, descriptor)
+              cb()
+            }
+          )
+        },
+        function (typeId, descriptor, callback) {
+          messageBusChannel.getRpc().request(
+            'store_rpc',
+            { method: 'put', domain: metaDomain, type: metaType, id: typeId },
+            descriptor,
+            function (err) {
+              callback(err)
+            }
+          )
         }
-      )
+      ], cb)
     }
 
     messageBusChannel.subscribe('store.*.*.*.*', consumer, 'scanner')

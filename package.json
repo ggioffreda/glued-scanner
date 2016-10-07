@@ -4,6 +4,7 @@
   "description": "Scans objects sent to a Glue store and keeps track of their properties",
   "main": "scanner.js",
   "dependencies": {
+    "async": "^2.0.1",
     "glued-common": "^0.4.2"
   },
   "devDependencies": {
