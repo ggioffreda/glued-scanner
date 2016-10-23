@@ -37,6 +37,7 @@ describe('Scanner', function () {
     const rpcRequest = sinon.stub()
     rpcRequest.onFirstCall().callsArgWith(2, null, { data: object })
     rpcRequest.onSecondCall().callsArgWith(2, null, {})
+    rpcRequest.onThirdCall().callsArgWith(2, null, {})
     const rpc = { request: rpcRequest }
     const messageBusChannel = { subscribe: sinon.stub(), getRpc: sinon.stub().returns(rpc), publish: sinon.spy() }
 
@@ -57,10 +58,13 @@ describe('Scanner', function () {
     it('should fetch the object and the descriptor through RPC and try and save the descriptor', function (done) {
       const ObjectDescriiptor = require('../src/object-descriptor')
       const expectedDescriptor = { descriptor: ObjectDescriiptor.describe(object), id: 'type:test:test' }
-      consumer(['test', 'test', 'test', '1', 'inserted'].join('.'), {}, {}, done)
-      assert.ok(rpcRequest.calledThrice)
-      assert.equal(rpcRequest.lastCall.args[1].id, 'type:test:test')
-      assert.deepEqual(rpcRequest.lastCall.args[2], expectedDescriptor)
+      consumer(['test', 'test', 'test', '1', 'inserted'].join('.'), {}, {}, function (err) {
+        assert.equal(err, null)
+        assert.ok(rpcRequest.calledThrice)
+        assert.equal(rpcRequest.lastCall.args[1].id, 'type:test:test')
+        assert.deepEqual(rpcRequest.lastCall.args[1].object, expectedDescriptor)
+        done(err)
+      })
     })
   })
 })
