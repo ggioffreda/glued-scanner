@@ -5,7 +5,7 @@
   "main": "scanner.js",
   "dependencies": {
     "async": "^2.0.1",
-    "glued-common": "^0.4.2"
+    "glued-common": "^0.4.4"
   },
   "devDependencies": {
     "eslint-config-standard": "^6.2.0",
