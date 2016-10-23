@@ -1,8 +1,8 @@
 function Scanner () {
   var objectCount = 0
   const ObjectDescriptor = require('./object-descriptor')
-  const metaDomain = 'glued'
-  const metaType = '__meta'
+  const metaDomain = process.env.GLUED_SCANNER_DOMAIN || 'glued'
+  const metaType = process.env.GLUED_SCANNER_TYPE || '__meta'
 
   this.getName = function () {
     return 'scanner'
@@ -10,6 +10,8 @@ function Scanner () {
 
   this.getState = function () {
     return {
+      domain: metaDomain,
+      type: metaType,
       count: objectCount
     }
   }
