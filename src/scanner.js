@@ -88,7 +88,7 @@ function Scanner () {
           )
         },
         function (typeId, descriptor, callback) {
-          objectCount++;
+          objectCount++
           messageBusChannel.getRpc().request(
             'store_rpc',
             { method: 'put', domain: metaDomain, type: metaType, id: typeId, object: descriptor },
