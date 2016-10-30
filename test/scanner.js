@@ -17,7 +17,7 @@ describe('Scanner', function () {
 
   describe('Scanner.getState()', function () {
     it('should return the state', function () {
-      assert.deepEqual(scanner.getState(), { count: 0 })
+      assert.deepEqual(scanner.getState(), { count: 0, domain: 'glued', type: '__meta' })
     })
   })
 
