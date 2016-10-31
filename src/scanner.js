@@ -42,6 +42,12 @@ function Scanner () {
         return
       }
 
+      if (domain.substring(0, 2) === '__' || type.substring(0, 2) === '__') {
+        // don't scan system tables
+        cb()
+        return
+      }
+
       if (['inserted', 'updated'].indexOf(action) < 0) {
         // not tracking other actions
         cb()
